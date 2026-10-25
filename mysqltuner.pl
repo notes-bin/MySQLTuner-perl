@@ -111,7 +111,7 @@ my %opt = (
     "defaults-extra-file" => '',
     "protocol"            => '',
     "dumpdir"             => '',
-    "stop"  => 0,
+    "stop"                => 0,
 );
 
 # Gather the options from the command line
@@ -1055,6 +1055,7 @@ sub select_array_with_headers {
     chomp(@result);
     return @result;
 }
+
 # MySQL Request Array
 sub select_csv_file {
     my $tfile = shift;
@@ -1868,8 +1869,7 @@ sub get_system_info {
     }
     infoprint "External IP           : " . $ext_ip;
     $result{'Network'}{'External Ip'} = $ext_ip;
-    badprint
-      "External IP           : Can't check, no Internet connectivity"
+    badprint "External IP           : Can't check, no Internet connectivity"
       unless defined($httpcli);
     infoprint "Name Servers          : "
       . infocmd_one "grep 'nameserver' /etc/resolv.conf \| awk '{print \$2}'";
@@ -5505,7 +5505,7 @@ sub mariadb_xtradb {
     infoprint "XtraDB is enabled.";
     infoprint "Note that MariaDB 10.2 makes use of InnoDB, not XtraDB."
 
-      # Not implemented
+    # Not implemented
 }
 
 # Recommendations for RocksDB
@@ -6193,7 +6193,8 @@ sub mysql_innodb {
     $mystat{'Innodb_log_waits_computed'} = 0;
 
     if (    defined( $mystat{'Innodb_log_waits'} )
-        and defined( $mystat{'Innodb_log_writes'} ) and $mystat{'Innodb_log_writes'} > 0.000001 )
+        and defined( $mystat{'Innodb_log_writes'} )
+        and $mystat{'Innodb_log_writes'} > 0.000001 )
     {
         $mystat{'Innodb_log_waits_computed'} =
           $mystat{'Innodb_log_waits'} / $mystat{'Innodb_log_writes'};
@@ -6499,6 +6500,7 @@ sub mysql_tables {
     }
 
     infoprint("Dumpdir: $opt{dumpdir}");
+
     # Store all information schema in dumpdir if defined
     if ( defined $opt{dumpdir} and -d "$opt{dumpdir}" ) {
         for my $info_s_table (
@@ -6892,7 +6894,8 @@ sub dump_result {
         }
 
         my $json = JSON->new->allow_nonref;
-        print $json->utf8(1)->pretty( ( $opt{'prettyjson'} ? 1 : 0 ) )
+        print $json->utf8(1)
+          ->pretty( ( $opt{'prettyjson'} ? 1 : 0 ) )
           ->encode( \%result );
 
         if ( $opt{'outputfile'} ne 0 ) {
@@ -6900,7 +6903,8 @@ sub dump_result {
             open my $fh, q(>), $opt{'outputfile'}
               or die
 "Unable to open $opt{'outputfile'} in write mode. please check permissions for this file or directory";
-            print $fh $json->utf8(1)->pretty( ( $opt{'prettyjson'} ? 1 : 0 ) )
+            print $fh $json->utf8(1)
+              ->pretty( ( $opt{'prettyjson'} ? 1 : 0 ) )
               ->encode( \%result );
             close $fh;
         }
